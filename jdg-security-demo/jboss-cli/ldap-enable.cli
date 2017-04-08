@@ -1,0 +1,19 @@
+batch
+
+/core-service=management/ldap-connection=ldap-connection/:add(search-credential="redhat@123",search-dn="cn=Directory Manager",url="ldap://tools.example.com")
+
+# Authentication
+/core-service=management/security-realm=ldap-security-realm:add
+
+/core-service=management/security-realm=ldap-security-realm/authentication=ldap:add(base-dn="ou=People,dc=example,dc=com",connection="ldap-connection",username-attribute="uid")
+
+/core-service=management/management-interface=http-interface/:write-attribute(name=security-realm,value="ldap-security-realm")
+
+# Authorization
+/core-service=management/security-realm=ldap-security-realm/authorization=ldap:add(connection=ldap-connection)
+
+/core-service=management/security-realm=ldap-security-realm/authorization=ldap/group-search=group-to-principal:add(iterative=true, group-dn-attribute="dn", group-name="SIMPLE", group-name-attribute="cn", base-dn="ou=Groups,dc=example,dc=com", principal-attribute="uniqueMember", search-by="DISTINGUISHED_NAME")
+
+run-batch
+
+reload
