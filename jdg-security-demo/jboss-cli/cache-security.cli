@@ -1,6 +1,40 @@
-# TODO
 batch
 
+# Enable security at the container level
+/subsystem=datagrid-infinispan/cache-container=clustered/security=SECURITY:add()
+
+# Add Role Mappers
+# /subsystem=datagrid-infinispan/cache-container=clustered/security=SECURITY/authorization=AUTHORIZATION:add(mapper=org.infinispan.security.impl.CommonRoleMapper)
+/subsystem=datagrid-infinispan/cache-container=clustered/security=SECURITY/authorization=AUTHORIZATION:add(mapper=org.infinispan.security.impl.IdentityRoleMapper)
+
+# Add roles and permissions
+# Any change to role permissions requires restart of server
+
+/subsystem=datagrid-infinispan/cache-container=clustered/security=SECURITY/authorization=AUTHORIZATION/role=DEVELOPERS:add(name="Developers",permissions=[WRITE])
+/subsystem=datagrid-infinispan/cache-container=clustered/security=SECURITY/authorization=AUTHORIZATION/role=BUSINESS:add(name="Business",permissions=[READ])
+/subsystem=datagrid-infinispan/cache-container=clustered/security=SECURITY/authorization=AUTHORIZATION/role=ADMINS:add(name="ClusterAdmins",permissions=[ALL,EXEC])
+/subsystem=datagrid-infinispan/cache-container=clustered/security=SECURITY/authorization=AUTHORIZATION/role=MANAGERS:add(name="Managers",permissions=[ALL_READ,ALL_WRITE,EXEC])
+
+# Make hotrod to use security
+
+/subsystem=datagrid-infinispan-endpoint/hotrod-connector=hotrod-connector/authentication=AUTHENTICATION:add(security-realm=ldap-security-realm)
+/subsystem=datagrid-infinispan-endpoint/hotrod-connector=hotrod-connector/authentication=AUTHENTICATION/sasl=SASL:add(mechanisms=[PLAIN,DIGEST-MD5],server-name="node1-hotrod-server")
+
+# Create Secured Distributed Cache Configuration
+
+/subsystem=datagrid-infinispan/cache-container=clustered/configurations=CONFIGURATIONS/distributed-cache-configuration=securedConfig:add(mode=SYNC,remote-timeout=30000,start=EAGER,segments=20,owners=2)
+
+/subsystem=datagrid-infinispan/cache-container=clustered/configurations=CONFIGURATIONS/distributed-cache-configuration=securedConfig/locking=LOCKING:add(striping=false,acquire-timeout=30000,concurrency-level=1000)
+
+/subsystem=datagrid-infinispan/cache-container=clustered/configurations=CONFIGURATIONS/distributed-cache-configuration=securedConfig/transaction=TRANSACTION:add(mode=NONE)
+
+/subsystem=datagrid-infinispan/cache-container=clustered/configurations=CONFIGURATIONS/distributed-cache-configuration=securedConfig/security:add()
+
+/subsystem=datagrid-infinispan/cache-container=clustered/configurations=CONFIGURATIONS/distributed-cache-configuration=securedConfig/security=SECURITY/authorization=AUTHORIZATION/:add(roles=["Business","ClusterAdmins","Developers","Managers"])
+
+# Add an example security cache called users_cache to use securedCacheConfig
+
+/subsystem=datagrid-infinispan/cache-container=clustered/distributed-cache=users-cache:add(configuration=securedConfig)
 
 run-batch
 
