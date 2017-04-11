@@ -16,4 +16,4 @@ batch
 
 run-batch
 
-reload
+/:reload

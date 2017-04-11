@@ -1,10 +1,10 @@
-= JDG Security Demo Application
+= JDG Security with LDAP
 
 This application shows how we can use security with https://developers.redhat.com/products/datagrid/overview/[JDG] via Access Control List (ACL)
-or Role Based Access Control (RBAC).  This demo is a inspiration from https://github.com/tristantarrant[Tristan Tarrant]
- http://blog.infinispan.org/2014/07/infinispan-security-3-hotrod.html[blog] with adaptions done for the https://developers.redhat.com/products/datagrid/overview/[JDG 7.x]
+or Role Based Access Control (RBAC).  This demo is a inspiration from
+https://github.com/tristantarrant[Tristan Tarrant]
+ http://blog.infinispan.org/2014/07/infinispan-security-3-hotrod.html[blog] with adaptions done for the
+https://developers.redhat.com/products/datagrid/overview/[JDG 7.x]
+and LDAP based security for https://developers.redhat.com/products/datagrid/overview/[JDG 7.x]
 
-This demo application will show how to enable security on JDG with LDAP.
-
-
-Please checkout my blog @ <<>> for detailed instructions and steps
+Please checkout my https://wp.me/p8e0as-1OXL[blog] for detailed instructions and steps
