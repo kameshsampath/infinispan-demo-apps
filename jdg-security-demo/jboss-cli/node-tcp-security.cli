@@ -1,0 +1,9 @@
+batch
+
+/subsystem=datagrid-jgroups/stack=tcp/sasl=SASL:add(mech="DIGEST-MD5",security-realm="ManagementRealm",cluster-role="cluster")
+/subsystem=datagrid-jgroups/stack=tcp/sasl=SASL/property=client_name:add(value="nodeadmin")
+/subsystem=datagrid-jgroups/stack=tcp/sasl=SASL/property=client_password:add(value="redhat@123")
+
+run-batch
+
+/:reload
