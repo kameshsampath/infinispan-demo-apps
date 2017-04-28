@@ -10,5 +10,6 @@
 hs_err_pid*
 earth-moon
 jdg-rolling-demo
+jboss-datagrid-7.1.0-quickstarts
 **/.DS_Store
 **/target

@@ -28,6 +28,7 @@
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
+
             <!-- logging -->
             <dependency>
                 <groupId>org.apache.logging.log4j</groupId>
