@@ -8,6 +8,7 @@
   </jgroups>
 
   <cache-container name="default" default-cache="popular-movies-cache">
+    <replicated-cache name="moviestore-sessions-cache" mode="SYNC" start="EAGER" statistics="true"/>
     <replicated-cache name="popular-movies-cache" mode="SYNC" start="EAGER" statistics="true"/>
   </cache-container>
 

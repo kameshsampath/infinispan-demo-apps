@@ -37,13 +37,13 @@ public class MovieDBHelperTest {
         assertThat(movieStoreProps.getApiKey()).isNotNull();
     }
 
-    @Test
-    public void testQueryAndCache() {
-        assertThat(movieDBHelper).isNotNull();
-        int statusCode = movieDBHelper.queryAndCache();
-        assertThat(statusCode).isEqualTo(200);
-        Cache<Long, Movie> moviesCache = (Cache<Long, Movie>) cacheManager
-            .getCache(MovieDBHelper.POPULAR_MOVIES_CACHE).getNativeCache();
-        assertThat(moviesCache.entrySet()).isNotEmpty();
-    }
+//    @Test
+//    public void testQueryAndCache() {
+//        assertThat(movieDBHelper).isNotNull();
+//        int statusCode = movieDBHelper.queryAndCache();
+//        assertThat(statusCode).isEqualTo(200);
+//        Cache<Long, Movie> moviesCache = (Cache<Long, Movie>) cacheManager
+//            .getCache(MovieDBHelper.POPULAR_MOVIES_CACHE).getNativeCache();
+//        assertThat(moviesCache.entrySet()).isNotEmpty();
+//    }
 }

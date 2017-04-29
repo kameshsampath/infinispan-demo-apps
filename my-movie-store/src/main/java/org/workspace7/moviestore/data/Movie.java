@@ -9,9 +9,10 @@ import lombok.Data;
 @Data
 @Builder
 public class Movie {
-    private long id;
+    private String id;
     private String posterPath;
     private String overview;
     private String title;
     private float popularity;
+    private double price;
 }

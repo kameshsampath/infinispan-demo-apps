@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0"/>
+  <title>Popular Movie Store:: Material</title>
+  <!--Import Google Icon Font-->
+  <link href="http://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet"/>
+  <link href="css/materialize.min.css" type="text/css" rel="stylesheet"
+        media="screen,projection"/>
+  <link href="css/moviestore.css" type="text/css" rel="stylesheet"
+        media="screen,projection"/>
+</head>
+<body>
+<nav class="light-blue lighten-1" role="navigation">
+  <div class="nav-wrapper container"><a id="logo-container" href="#" class="brand-logo">Popular Movie Store</a>
+    <ul class="right hide-on-med-and-down">
+      <li><a href="/" id="go-to-home">Home</a></li>
+      <li><a href="/sessions" id="show-sessions">Sessions</a></li>
+      <!-- th:text="*{age != null}? *{age} : '(no age specified)'"-->
+      <li><a href="#" id="show-cart">
+        <span id="cart-items-indicator"
+              th:text="${cartCount != null ? strings.concat('Your Cart(',cartCount,')'):'Your Cart(0)'}">Your Cart(0)</span></a>
+      </li>
+    </ul>
+    <ul id="nav-mobile" class="side-nav">
+      <li><a href="#" id="show-cart-mobile"><span id="mobile-cart-items-indicator">Your Cart(0)</span></a></li>
+    </ul>
+    <a href="#" data-activates="nav-mobile" class="button-collapse"><i class="material-icons">menu</i></a>
+  </div>
+</nav>
+<div class="container">
+  <br/><br/>
+  <section layout:fragment="content">
+    <p>Page content goes here</p>
+  </section>
+</div>
+<script type="text/javascript" src="webjars/jquery/3.1.1/jquery.min.js"></script>
+<script type="text/javascript" src="js/materialize.min.js"></script>
+<script type="text/javascript" src="js/main.js"></script>
+</body>
+</html>

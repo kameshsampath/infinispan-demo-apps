@@ -16,7 +16,10 @@ import org.workspace7.moviestore.data.Movie;
 import java.io.IOException;
 import java.net.URI;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ThreadLocalRandom;
+import java.util.stream.Collectors;
 
 /**
  * @author kameshs
@@ -31,14 +34,14 @@ public class MovieDBHelper {
 
     final MovieStoreProps movieStoreProps;
 
-    final AdvancedCache<Long, Movie> moviesCache;
+    final AdvancedCache<String, Movie> moviesCache;
 
     @Autowired
     public MovieDBHelper(RestTemplate restTemplate, MovieStoreProps movieStoreProps,
                          CacheManager cacheManager) {
         this.restTemplate = restTemplate;
         this.movieStoreProps = movieStoreProps;
-        this.moviesCache = (AdvancedCache<Long, Movie>) cacheManager
+        this.moviesCache = (AdvancedCache<String, Movie>) cacheManager
             .getCache(POPULAR_MOVIES_CACHE).getNativeCache();
     }
 
@@ -47,7 +50,7 @@ public class MovieDBHelper {
      *
      * @return - the status code of the invocation
      */
-    public int queryAndCache() {
+    protected int queryAndCache() {
 
         if (this.moviesCache.isEmpty()) {
 
@@ -65,7 +68,7 @@ public class MovieDBHelper {
 
             log.info("Response Status:{}", response.getStatusCode());
 
-            Map<Long, Movie> movieMap = new HashMap<>();
+            Map<String, Movie> movieMap = new HashMap<>();
 
             if (200 == response.getStatusCode().value()) {
                 String jsonBody = response.getBody();
@@ -74,13 +77,14 @@ public class MovieDBHelper {
                     JsonNode root = objectMapper.readTree(jsonBody);
                     JsonNode results = root.path("results");
                     results.elements().forEachRemaining(movieNode -> {
-                        Long id = movieNode.get("id").asLong();
+                        String id = movieNode.get("id").asText();
                         Movie movie = Movie.builder()
                             .id(id)
                             .overview(movieNode.get("overview").asText())
                             .popularity(movieNode.get("popularity").floatValue())
                             .posterPath("http://image.tmdb.org/t/p/w300" + movieNode.get("poster_path").asText())
                             .title(movieNode.get("title").asText())
+                            .price(ThreadLocalRandom.current().nextDouble(1.0, 10.0))
                             .build();
                         movieMap.put(id, movie);
                     });
@@ -98,8 +102,25 @@ public class MovieDBHelper {
         }
     }
 
-    public void query(long movieId) {
-        //TODO
+    public Movie query(String movieId) {
+        return moviesCache.get(movieId);
+    }
+
+    /**
+     * @return
+     */
+    public List<Movie> getAll() {
+        if (moviesCache.isEmpty()) {
+            queryAndCache();
+        } else {
+            log.info("Loading movies from cache");
+        }
+
+        List<Movie> movies = moviesCache.entrySet().stream()
+            .map(longMovieEntry -> longMovieEntry.getValue())
+            .collect(Collectors.toList());
+
+        return movies;
     }
 
 //    /**

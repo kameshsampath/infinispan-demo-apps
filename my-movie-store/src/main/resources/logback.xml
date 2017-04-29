@@ -8,6 +8,9 @@
     </encoder>
   </appender>
 
+  <logger name="org.jgroups.protocols.pbcast" level="ERROR" additivity="false">
+    <appender-ref ref="STDOUT" />
+  </logger>
 
   <root level="INFO">
     <appender-ref ref="STDOUT"/>
