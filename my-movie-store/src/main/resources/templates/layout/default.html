@@ -6,9 +6,9 @@
   <title>Popular Movie Store:: Material</title>
   <!--Import Google Icon Font-->
   <link href="http://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet"/>
-  <link href="css/materialize.min.css" type="text/css" rel="stylesheet"
+  <link href="/css/materialize.min.css" type="text/css" rel="stylesheet"
         media="screen,projection"/>
-  <link href="css/moviestore.css" type="text/css" rel="stylesheet"
+  <link href="/css/moviestore.css" type="text/css" rel="stylesheet"
         media="screen,projection"/>
 </head>
 <body>
@@ -17,10 +17,8 @@
     <ul class="right hide-on-med-and-down">
       <li><a href="/" id="go-to-home">Home</a></li>
       <li><a href="/sessions" id="show-sessions">Sessions</a></li>
-      <!-- th:text="*{age != null}? *{age} : '(no age specified)'"-->
-      <li><a href="#" id="show-cart">
-        <span id="cart-items-indicator"
-              th:text="${cartCount != null ? strings.concat('Your Cart(',cartCount,')'):'Your Cart(0)'}">Your Cart(0)</span></a>
+      <li><a href="/cart/show" id="show-cart">
+        <span>Your Cart(<span id="cart-items-indicator" th:text="${cartCount==null?'0':cartCount}">0</span>)</span></a>
       </li>
     </ul>
     <ul id="nav-mobile" class="side-nav">
@@ -35,8 +33,8 @@
     <p>Page content goes here</p>
   </section>
 </div>
-<script type="text/javascript" src="webjars/jquery/3.1.1/jquery.min.js"></script>
-<script type="text/javascript" src="js/materialize.min.js"></script>
-<script type="text/javascript" src="js/main.js"></script>
+<script type="text/javascript" src="/webjars/jquery/3.1.1/jquery.min.js"></script>
+<script type="text/javascript" src="/js/materialize.min.js"></script>
+<script type="text/javascript" src="/js/main.js"></script>
 </body>
 </html>

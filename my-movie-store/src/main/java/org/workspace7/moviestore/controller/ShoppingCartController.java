@@ -4,12 +4,12 @@ import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 import org.workspace7.moviestore.data.Movie;
 import org.workspace7.moviestore.data.MovieCart;
+import org.workspace7.moviestore.data.MovieCartItem;
 import org.workspace7.moviestore.utils.MovieDBHelper;
 
 import javax.servlet.http.HttpSession;
@@ -52,16 +52,28 @@ public class ShoppingCartController {
     public String showCart(Map<String, Object> model) {
         log.info("Showing Cart {}", movieCart);
         model.put("movieCart", movieCart);
-        List<Movie> cartMovies = movieCart.getMovieItems().keySet().stream()
-            .map(movieDBHelper::query)
+        Map<String, Integer> movieItems = movieCart.getMovieItems();
+        List<MovieCartItem> cartMovies = movieCart.getMovieItems().keySet().stream()
+            .map(movieId -> {
+                Movie movie = movieDBHelper.query(movieId);
+                int quantity = movieItems.get(movieId);
+                double total = quantity * movie.getPrice();
+                log.info("Movie:{} total for {} items is {}", movie, quantity, total);
+                return MovieCartItem.builder()
+                    .movie(movie)
+                    .quantity(quantity)
+                    .total(total)
+                    .build();
+            })
             .collect(Collectors.toList());
-        model.put("cartItems", movieCart.getMovieItems());
+        model.put("cartItems", cartMovies);
         model.put("cartCount", cartMovies.size());
         return "cart";
     }
 
-    @GetMapping("/cart/checkout")
+    @PostMapping("/cart/pay")
+    @ResponseStatus(HttpStatus.CREATED)
     public void checkout() {
-        log.info("Checking out the cart {}", movieCart);
+        log.info("Your request {} will be processed, thank your for shopping", movieCart);
     }
 }

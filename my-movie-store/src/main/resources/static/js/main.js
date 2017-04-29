@@ -14,7 +14,7 @@ $(document).ready(function () {
             timeout: 600000,
             success: function (data) {
                 console.log("Success : ", data);
-                $("#cart-items-indicator").text('Your Cart(' + data + ')');
+                $("#cart-items-indicator").text(data);
             },
             error: function (e) {
                 console.log("ERROR : ", e);
