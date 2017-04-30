@@ -1,0 +1,47 @@
+---
+apiVersion: "extensions/v1beta1"
+kind: "Deployment"
+spec:
+  replicas: 1
+  template:
+    spec:
+      volumes:
+        - name: config
+          configMap:
+            name: ${project.artifactId}
+            items:
+            - key: application.yaml
+              path: application.yaml
+      containers:
+      - env:
+        - name: API_KEY
+          valueFrom:
+            secretKeyRef:
+              name: ${project.artifactId}
+              key: apiKey
+        - name: OPENSHIFT_KUBE_PING_NAMESPACE
+          valueFrom:
+            fieldRef:
+              apiVersion: v1
+              fieldPath: metadata.namespace
+        - name: JAVA_OPTIONS
+          value: -Djava.net.preferIPv4Stack=true -Djboss.default.jgroups.stack=kubernetes
+          imagePullPolicy: IfNotPresent
+          ports:
+          - containerPort: 8080
+            name: http
+          - containerPort: 8888
+            name: kube-ping-port
+          - containerPort: 8778
+            name: jolokia-port
+          livenessProbe:
+            httpGet:
+              port: http
+            initialDelaySeconds: 5
+          readinessProbe:
+            httpGet:
+              port: http
+            initialDelaySeconds: 5
+          volumeMounts:
+            - name: config
+              mountPath: /deployments/config

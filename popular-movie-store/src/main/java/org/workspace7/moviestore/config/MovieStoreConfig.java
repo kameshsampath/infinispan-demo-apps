@@ -1,13 +1,18 @@
 package org.workspace7.moviestore.config;
 
-import org.infinispan.spring.provider.SpringEmbeddedCacheManagerFactoryBean;
+import org.infinispan.manager.DefaultCacheManager;
+import org.infinispan.manager.EmbeddedCacheManager;
+import org.infinispan.spring.provider.SpringEmbeddedCacheManager;
 import org.infinispan.spring.session.configuration.EnableInfinispanEmbeddedHttpSession;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.io.ClassPathResource;
 import org.springframework.web.client.RestTemplate;
+import org.workspace7.moviestore.listeners.ClusterListener;
+import org.workspace7.moviestore.listeners.SessionsCacheListener;
+
+import java.io.IOException;
 
 /**
  * @author kameshs
@@ -23,10 +28,26 @@ public class MovieStoreConfig {
         return new RestTemplate();
     }
 
+//    @Bean
+//    public SpringEmbeddedCacheManagerFactoryBean springCache() {
+//        SpringEmbeddedCacheManagerFactoryBean factoryBean = new SpringEmbeddedCacheManagerFactoryBean();
+//        factoryBean.setConfigurationFileLocation(new ClassPathResource("/infinispan-moviestore.xml"));
+//        return factoryBean;
+//    }
+
     @Bean
-    public SpringEmbeddedCacheManagerFactoryBean springCache() {
-        SpringEmbeddedCacheManagerFactoryBean factoryBean = new SpringEmbeddedCacheManagerFactoryBean();
-        factoryBean.setConfigurationFileLocation(new ClassPathResource("/infinispan-moviestore.xml"));
-        return factoryBean;
+    public SpringEmbeddedCacheManager cacheManager() throws IOException {
+        return new SpringEmbeddedCacheManager(infinispanCacheManager());
     }
+
+    public EmbeddedCacheManager infinispanCacheManager() throws IOException {
+        EmbeddedCacheManager embeddedCacheManager = new DefaultCacheManager(this.getClass()
+            .getResourceAsStream("/infinispan-moviestore.xml"));
+        ClusterListener clusterListener = new ClusterListener(2);
+        embeddedCacheManager.addListener(clusterListener);
+        embeddedCacheManager.getCache("popular-movies-cache")
+            .addListener(new SessionsCacheListener());
+        return embeddedCacheManager;
+    }
+
 }

@@ -1,5 +1,14 @@
-= My Movie Store
+= Popular Movie Store
 
+A demo application that will be used to demonstrate the application state
+maintainence using Infinispan and Spring Session.  The applcation will be
+tested for rolling upgrades in kuberenetes.
+
+NOTE: The document is work in progresss
 
 == Disclaimer
+
+This demo application uses https://www.themoviedb.org[MovieDB] API for getting
+some movie posters. All data displayed in the demo is fictious and only used
+for demnstrate various features of the demo
 
