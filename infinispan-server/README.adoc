@@ -1,0 +1,2 @@
+= infinspan server
+the application that will be used to deploy infinispan server in kubernetes

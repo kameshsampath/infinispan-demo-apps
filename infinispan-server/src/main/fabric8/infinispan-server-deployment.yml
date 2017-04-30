@@ -1,0 +1,47 @@
+---
+apiVersion: "extensions/v1beta1"
+kind: "Deployment"
+spec:
+  replicas: ${replicas}
+  template:
+    spec:
+      containers:
+      - args:
+        - cloud
+        - -Djboss.default.jgroups.stack=kubernetes
+        env:
+        - name: OPENSHIFT_KUBE_PING_NAMESPACE
+          valueFrom:
+            fieldRef:
+              apiVersion: v1
+              fieldPath: metadata.namespace
+        name: ${project.artifactId}
+        image: ${infinispan.image}
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 8080
+          name: http
+          protocol: TCP
+        - containerPort: 8181
+          name: jolokia-port
+          protocol: TCP
+        - containerPort: 8888
+          name: kube-ping-port
+        - containerPort: 9990
+          protocol: TCP
+        - containerPort: 11211
+          name: hotrod-client
+          protocol: TCP
+        - containerPort: 11222
+          name: hotrod-client2
+          protocol: TCP
+        resources: {}
+        terminationMessagePath: /dev/termination-log
+        livenessProbe:
+          httpGet:
+            port: http
+          initialDelaySeconds: 30
+        readinessProbe:
+          httpGet:
+            port: http
+          initialDelaySeconds: 30
