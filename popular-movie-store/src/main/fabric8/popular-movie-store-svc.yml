@@ -5,6 +5,7 @@ metadata:
   labels:
     expose: "true"
 spec:
+  type: NodePort
   ports:
   - name: http
     port: 8080
