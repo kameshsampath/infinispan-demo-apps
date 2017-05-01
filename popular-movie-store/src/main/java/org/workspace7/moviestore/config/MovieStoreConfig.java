@@ -43,8 +43,6 @@ public class MovieStoreConfig {
     public EmbeddedCacheManager infinispanCacheManager() throws IOException {
         EmbeddedCacheManager embeddedCacheManager = new DefaultCacheManager(this.getClass()
             .getResourceAsStream("/infinispan-moviestore.xml"));
-        ClusterListener clusterListener = new ClusterListener(2);
-        embeddedCacheManager.addListener(clusterListener);
         embeddedCacheManager.getCache("popular-movies-cache")
             .addListener(new SessionsCacheListener());
         return embeddedCacheManager;

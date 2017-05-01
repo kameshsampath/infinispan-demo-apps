@@ -24,8 +24,7 @@ public class ClusterListener {
 
     @ViewChanged
     public void viewChanged(ViewChangedEvent event) {
-        log.info("View changed: {} ", event.getNewMembers());
-
+        log.info("PMS:::View changed: {} ", event.getNewMembers());
         if (event.getCacheManager().getMembers().size() == expectedNodes) {
             clusterFormedLatch.countDown();
         } else if (event.getNewMembers().size() < event.getOldMembers().size()) {

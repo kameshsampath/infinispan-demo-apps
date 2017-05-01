@@ -8,7 +8,30 @@
     </encoder>
   </appender>
 
-  <logger name="org.jgroups.protocols.pbcast" level="ERROR" additivity="false">
+  <!-- SpringBoot -->
+  <logger name="org.springframework.boot.actuate.endpoint.mvc" level="WARN" additivity="false">
+    <appender-ref ref="STDOUT"/>
+  </logger>
+
+  <!-- JGroups logging -->
+  <logger name="org.jgroups.protocols.pbcast" level="WARN" additivity="false">
+    <appender-ref ref="STDOUT"/>
+  </logger>
+
+  <logger name="org.jgroups.protocols.UNICAST" level="WARN" additivity="false">
+    <appender-ref ref="STDOUT"/>
+  </logger>
+
+  <logger name="org.jgroups.protocols.kubernetes.KUBE_PING" level="WARN" additivity="false">
+    <appender-ref ref="STDOUT"/>
+  </logger>
+
+  <logger name="org.jgroups.protocols.MERGE3" level="WARN" additivity="false">
+    <appender-ref ref="STDOUT"/>
+  </logger>
+
+  <!-- Helps in watching the status good for dev -->
+  <logger name="org.jgroups.ping.kube" level="DEBUG" additivity="false">
     <appender-ref ref="STDOUT"/>
   </logger>
 
