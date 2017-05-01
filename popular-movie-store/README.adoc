@@ -1,14 +1,82 @@
 = Popular Movie Store
 
-A demo application that will be used to demonstrate the application state
-maintainence using Infinispan and Spring Session.  The applcation will be
-tested for rolling upgrades in kuberenetes.
+A demo application that will be used to demonstrate the application state maintainence using Infinispan and Spring Session.
+The application will be tested for rolling upgrades in kuberenetes.
 
-NOTE: The document is work in progresss
+
+== Building
+
+You need the themoviedb API key for running the application, you can get one from
+https://www.themoviedb.org/documentation/api[here].
+
+Once you have the API key from themoviedb, generate a base64 encoded value of it,
+
+```
+echo -n '<your-api-key>' | openssl base64
+```
+
+Once you have the base64 encoded API Key, run the following command to build the application,
+
+```
+./mvnw clean install -DapiKey=<your-base64-apikey>
+```
+
+== Deploying
+
+Assuming you having a running Kubernetes cluster, execute the following command to deploy the application,
+
+```
+./mvnw fabric8:deploy
+```
+
+NOTE: you need to wait for sometime during first deploy as images need to be pulled for the first time.
+
+== Checking the state
+
+```
+./mvnw clean install -DapiKey=<api-key> -Dfabric8.deploy.ignoreServices
+```
+
+== Accessing the Application
+
+Once the application is deployed in Kubernetes you can access the application using http://<kube-ip>:<nodePort/, all the
+services of this application are deployed using `nodePort` as service type.
+
+* To know the kube-ip run `minikube ip` or `minishift ip`
+* To know the `nodePort` of the application  run
+
+    `kubectl get svc popular-movie-store -o yaml | shyaml get-value spec.ports.0.nodePort`
+
+(OR)
+
+    `kubectl get svc popular-movie-store -o json | jq '.spec.ports[0].nodePort'`
+
+e.g.
+
+Lets say your kube ip is `192.168.64.14` and the application nodePort is `31923`, then you can access the application
+using http://192.168.64.14:31923
+
+==== Sessions API
+
+The core idea of the demo is to see if my sessions stand with rolling upgrade of the applications, to know your current
+sessions you can access the url http://<kube-ip>:<nodePort/sessions, which will return the JSON of the currently active
+sessions
+
+== Setup Local Kubernetes Cluster
+
+The kubernetes cluster can be set locally using
+
+* https://github.com/kubernetes/minikube[minikube]
+* https://github.com/minishift/minishift[minishift]
+
+== Utilities and Tools
+
+* http://hawt.io/[hawtio]
+* https://stedolan.github.io/jq/[jq]
+* https://github.com/0k/shyaml[shyaml]
 
 == Disclaimer
 
-This demo application uses https://www.themoviedb.org[MovieDB] API for getting
-some movie posters. All data displayed in the demo is fictious and only used
-for demnstrate various features of the demo
+This demo application uses https://www.themoviedb.org[MovieDB] API for getting some movie posters. All data displayed in
+the demo is only used for demonstrates various features of the demo and teaching.
 

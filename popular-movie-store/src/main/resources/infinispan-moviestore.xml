@@ -13,7 +13,9 @@
     <transport stack="configurationFile" cluster="PopularMovieStore" lock-timeout="60000"/>
 
     <!-- The cache that manages HTTP session-->
-    <replicated-cache name="moviestore-sessions-cache" mode="SYNC" start="EAGER" statistics="true"/>
+    <replicated-cache name="moviestore-sessions-cache" mode="SYNC" start="EAGER" statistics="true">
+      <store-as-binary keys="true" values="true"/>
+    </replicated-cache>
 
     <!-- Cache that will hold the movie details fetched via moviedb api -->
     <replicated-cache name="popular-movies-cache" mode="SYNC" start="EAGER" statistics="true">

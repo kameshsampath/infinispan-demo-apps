@@ -9,8 +9,6 @@ import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.client.RestTemplate;
-import org.workspace7.moviestore.listeners.ClusterListener;
-import org.workspace7.moviestore.listeners.SessionsCacheListener;
 
 import java.io.IOException;
 
@@ -28,13 +26,6 @@ public class MovieStoreConfig {
         return new RestTemplate();
     }
 
-//    @Bean
-//    public SpringEmbeddedCacheManagerFactoryBean springCache() {
-//        SpringEmbeddedCacheManagerFactoryBean factoryBean = new SpringEmbeddedCacheManagerFactoryBean();
-//        factoryBean.setConfigurationFileLocation(new ClassPathResource("/infinispan-moviestore.xml"));
-//        return factoryBean;
-//    }
-
     @Bean
     public SpringEmbeddedCacheManager cacheManager() throws IOException {
         return new SpringEmbeddedCacheManager(infinispanCacheManager());
@@ -43,8 +34,6 @@ public class MovieStoreConfig {
     public EmbeddedCacheManager infinispanCacheManager() throws IOException {
         EmbeddedCacheManager embeddedCacheManager = new DefaultCacheManager(this.getClass()
             .getResourceAsStream("/infinispan-moviestore.xml"));
-        embeddedCacheManager.getCache("popular-movies-cache")
-            .addListener(new SessionsCacheListener());
         return embeddedCacheManager;
     }
 

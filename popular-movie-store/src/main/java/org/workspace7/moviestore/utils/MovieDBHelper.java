@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.infinispan.AdvancedCache;
+import org.infinispan.stream.CacheCollectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.CacheManager;
 import org.springframework.http.ResponseEntity;
@@ -118,7 +119,9 @@ public class MovieDBHelper {
 
         List<Movie> movies = moviesCache.entrySet().stream()
             .map(longMovieEntry -> longMovieEntry.getValue())
-            .collect(Collectors.toList());
+            .collect(CacheCollectors.serializableCollector(() -> Collectors.toList()));
+
+        log.info("Loaded {} movies from cache", movies.size());
 
         return movies;
     }

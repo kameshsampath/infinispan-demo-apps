@@ -20,7 +20,7 @@
     <lombok.version>1.16.16</lombok.version>
     <jgroups.stack.file>default-jgroups-kubernetes.xml</jgroups.stack.file>
     <maven.test.skip>true</maven.test.skip>
-    <replicas>1</replicas>
+    <replicas>3</replicas>
   </properties>
 
   <dependencyManagement>

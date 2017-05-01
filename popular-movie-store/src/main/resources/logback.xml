@@ -18,6 +18,10 @@
     <appender-ref ref="STDOUT"/>
   </logger>
 
+  <logger name="org.jgroups.protocols.TCP" level="WARN" additivity="false">
+    <appender-ref ref="STDOUT"/>
+  </logger>
+
   <logger name="org.jgroups.protocols.UNICAST" level="WARN" additivity="false">
     <appender-ref ref="STDOUT"/>
   </logger>
@@ -31,7 +35,7 @@
   </logger>
 
   <!-- Helps in watching the status good for dev -->
-  <logger name="org.jgroups.ping.kube" level="DEBUG" additivity="false">
+  <logger name="org.jgroups.ping.kube" level="WARN" additivity="false">
     <appender-ref ref="STDOUT"/>
   </logger>
 
