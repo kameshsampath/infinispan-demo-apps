@@ -8,6 +8,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.session.MapSession;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.servlet.ModelAndView;
 import org.workspace7.moviestore.data.Movie;
@@ -66,7 +67,7 @@ public class HomeController {
 
                 if (movieCart != null) {
 
-                    log.info("Movie Cart:{} for session id:{}", movieCart);
+                    log.info("Movie Cart:{} for session id:{}", movieCart, session.getId());
 
                     final Map<String, Integer> movieItems = movieCart.getMovieItems();
 
@@ -91,6 +92,33 @@ public class HomeController {
             log.info("New Session");
             modelAndView.addObject("movies", movieList);
         }
+        modelAndView.setViewName("home");
+        return modelAndView;
+    }
+
+
+    @PostMapping("/logout")
+    public ModelAndView clear(ModelAndView modelAndView, HttpServletRequest request) {
+
+        List<Movie> movies = movieDBHelper.getAll();
+
+        List<MovieCartItem> movieList = movies.stream()
+            .map((Movie movie) -> MovieCartItem.builder()
+                .movie(movie)
+                .quantity(0)
+                .total(0)
+                .build())
+            .collect(Collectors.toList());
+
+        HttpSession session = request.getSession(false);
+
+        if (session != null) {
+            log.info("Invalidating session:{}", session.getId());
+            session.invalidate();
+        }
+
+        log.info("New Session");
+        modelAndView.addObject("movies", movieList);
         modelAndView.setViewName("home");
         return modelAndView;
     }

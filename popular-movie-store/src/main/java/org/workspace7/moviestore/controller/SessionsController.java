@@ -1,7 +1,11 @@
 package org.workspace7.moviestore.controller;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import lombok.extern.slf4j.Slf4j;
 import org.infinispan.AdvancedCache;
+import org.infinispan.stream.CacheCollectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.CacheManager;
 import org.springframework.session.MapSession;
@@ -11,6 +15,8 @@ import org.springframework.web.bind.annotation.RestController;
 import org.workspace7.moviestore.data.MovieCart;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * TODO fix json building...
@@ -28,69 +34,70 @@ public class SessionsController {
     public @ResponseBody
     String sessions(HttpServletRequest request) {
 
-        AdvancedCache<String, Object> sessionCache = (AdvancedCache<String, Object>)
-            cacheManager.getCache("moviestore-sessions-cache").getNativeCache();
+        String jsonResponse = "NO SESSIONS AVAILABLE";
 
-        log.info("Sessions:{}", sessionCache.get(request.getSession(false).getId()));
+        try {
 
-        StringBuilder jsonResponse = new StringBuilder();
+            AdvancedCache<String, Object> sessionCache = (AdvancedCache<String, Object>)
+                cacheManager.getCache("moviestore-sessions-cache").getNativeCache();
 
-        //ObjectMapper sessions = new ObjectMapper();
+            if (sessionCache != null && !sessionCache.isEmpty()) {
 
-        //ArrayNode sessionsArray = sessions.createArrayNode();
+                ObjectMapper sessions = new ObjectMapper();
 
-        if (sessionCache != null && !sessionCache.isEmpty()) {
-            sessionCache.cacheEntrySet()
-                .stream()
-                .forEach(cacheEntry -> {
-                    MapSession mapSession = (MapSession) cacheEntry.getValue();
+                ArrayNode sessionsArray = sessions.createArrayNode();
 
-                    log.info("Map Session: {}", mapSession);
+                Map<String, Object> sessionsCacheMap = sessionCache.entrySet()
+                    .stream()
+                    .collect(CacheCollectors.serializableCollector(() ->
+                        Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue)));
+
+                sessionsCacheMap.forEach((s, o) -> {
+
+                    MapSession mapSession = (MapSession) o;
+
+                    log.debug("Session Controller Map Session Id {} value : {}", s, mapSession);
+
+                    if (log.isDebugEnabled()) {
+                        StringBuilder debugMessage = new StringBuilder();
+
+                        mapSession.getAttributeNames().forEach(key -> {
+                            debugMessage.append("Attribute :" + s + " Value: " + mapSession.getAttribute(key));
+                        });
+
+                        log.debug("Map Session Attributes : {}", debugMessage);
+                    }
 
                     MovieCart movieCart = mapSession.getAttribute(ShoppingCartController.SESSION_ATTR_MOVIE_CART);
 
-                    log.info("Shopping Cart in Session {} is {}", mapSession.getId(), movieCart);
-
                     if (movieCart != null) {
 
-                        //ObjectNode movieCartNode = sessions.createObjectNode();
-                        //movieCartNode.put("sessionId", mapSession.getId());
-                        //movieCartNode.put("orderId", movieCart.getOrderId());
-                        jsonResponse.append("sessionId");
-                        jsonResponse.append(mapSession.getId());
-                        jsonResponse.append(",");
-                        jsonResponse.append("orderId");
-                        jsonResponse.append(movieCart.getOrderId());
-                        jsonResponse.append(",");
-                        jsonResponse.append("[");
+                        ObjectNode movieCartNode = sessions.createObjectNode();
+                        movieCartNode.put("sessionId", mapSession.getId());
+                        movieCartNode.put("orderId", movieCart.getOrderId());
 
-                        //ArrayNode movieItemsNode = movieCartNode.arrayNode();
+                        ArrayNode movieItemsNode = movieCartNode.arrayNode();
 
                         movieCart.getMovieItems().forEach((movieId, qty) -> {
-                            //ObjectNode movieItem = movieItemsNode.addObject();
-                            //movieItem.put("movieId", movieId);
-                            //movieItem.put("orderQuantity", qty);
-                            //movieItemsNode.add(movieItem);
-                            jsonResponse.append("movieId:");
-                            jsonResponse.append(movieId);
-                            jsonResponse.append(",");
-                            jsonResponse.append("orderQuantity:");
-                            jsonResponse.append(qty);
-                            jsonResponse.append(",");
+                            ObjectNode movieItem = movieItemsNode.addObject();
+                            movieItem.put("movieId", movieId);
+                            movieItem.put("orderQuantity", qty);
+                            movieItemsNode.add(movieItem);
                         });
-                        jsonResponse.append("]");
-                        //sessionsArray.add(movieCartNode);
+
+                        movieCartNode.set("movies", movieItemsNode);
+
+                        sessionsArray.add(movieCartNode);
                     }
                 });
+                jsonResponse = sessions.writeValueAsString(sessionsArray);
+            }
+
+        } catch (Exception e) {
+            log.error("Error building JSON response for sesisons", e);
         }
 
-
-//        try {
-//            jsonResponse = sessions.writeValueAsString(sessionsArray);
-//        } catch (JsonProcessingException e) {
-//            log.error("Error building JSON response for sesisons", e);
-//        }
-
-        return jsonResponse.toString();
+        return jsonResponse;
     }
+
 }

@@ -3,6 +3,7 @@
 A demo application that will be used to demonstrate the application state maintainence using Infinispan and Spring Session.
 The application will be tested for rolling upgrades in kuberenetes.
 
+WARNING: Document is still under development, might under some changs in instruction
 
 == Building
 
