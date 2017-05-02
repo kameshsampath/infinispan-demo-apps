@@ -43,7 +43,7 @@
   </logger>
 
   <!-- Helps in watching the status good for dev -->
-  <logger name="org.jgroups.ping.kube" level="WARN" additivity="false">
+  <logger name="org.jgroups.ping.kube" level="DEBUG" additivity="false">
     <appender-ref ref="STDOUT"/>
   </logger>
 

@@ -27,8 +27,10 @@ Once you have the base64 encoded API Key, run the following command to build the
 Assuming you having a running Kubernetes cluster, execute the following command to deploy the application,
 
 ```
-./mvnw fabric8:deploy
+./mvnw clean install
 ```
+
+the `install` goal will automcatically do `fabric8:deploy` allowing the applications to be deployed in kubernetes
 
 NOTE: you need to wait for sometime during first deploy as images need to be pulled for the first time.
 
@@ -37,6 +39,9 @@ NOTE: you need to wait for sometime during first deploy as images need to be pul
 ```
 ./mvnw clean install -DapiKey=<api-key> -Dfabric8.deploy.ignoreServices
 ```
+
+NOTE: `-Dfabric8.deploy.ignoreServices` avoids service redeployment when business logic changes,
+helps in using the same nodePort
 
 == Accessing the Application
 
@@ -68,9 +73,33 @@ sessions
 The kubernetes cluster can be set locally using
 
 * https://github.com/kubernetes/minikube[minikube]
+
+(OR)
+
 * https://github.com/minishift/minishift[minishift]
 
+NOTE: When running in OpenShift, to make the project view other pods it need to be added to view role
+like
+
+* `oc policy add-role-to-user view system:serviceaccount:$(oc project -q):default -n $(oc project -q)`
+
+* `oc policy add-role-to-user view system:serviceaccount:$(oc project -q):popular-movie-store -n $(oc project -q)`
+
 == Utilities and Tools
+
+=== Applications
+
+The following applications are very handy for development, and its purely optional to have them
+installed to the kubernetes environment, they are available at http://fabric8.io/manifests/kubernetes.html[Kubernetes]
+or http://fabric8.io/manifests/openshift.html[OpenShift] for respective environments
+
+* https://github.com/fabric8io/exposecontroller[exposecontroller] - a utility that can exposes the service automatically when it the manifests has
+label `expose:true`
+
+* https://github.com/fabric8io/configmapcontroller[configmapcontroller] - a utility that does a rebounce of the pod when the configmap mentioned in the annotation of the
+deployment changes
+
+=== Tools
 
 * http://hawt.io/[hawtio]
 * https://stedolan.github.io/jq/[jq]

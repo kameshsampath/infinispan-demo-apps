@@ -9,9 +9,7 @@ import org.infinispan.stream.CacheCollectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.CacheManager;
 import org.springframework.session.MapSession;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.workspace7.moviestore.data.MovieCart;
 
 import javax.servlet.http.HttpServletRequest;
@@ -30,11 +28,12 @@ public class SessionsController {
     @Autowired
     CacheManager cacheManager;
 
-    @GetMapping(value = "/sessions")
+    @CrossOrigin
+    @RequestMapping(method = RequestMethod.GET, value = "/sessions", produces = "application/json")
     public @ResponseBody
     String sessions(HttpServletRequest request) {
 
-        String jsonResponse = "NO SESSIONS AVAILABLE";
+        String jsonResponse = "{\"message\":\"NO SESSIONS AVAILABLE\"}";
 
         try {
 
@@ -82,7 +81,6 @@ public class SessionsController {
                             ObjectNode movieItem = movieItemsNode.addObject();
                             movieItem.put("movieId", movieId);
                             movieItem.put("orderQuantity", qty);
-                            movieItemsNode.add(movieItem);
                         });
 
                         movieCartNode.set("movies", movieItemsNode);
