@@ -45,13 +45,22 @@ Once you have the base64 encoded API Key, run the following command to build the
 
 == Deploying
 
+
 Assuming you having a running Kubernetes cluster, execute the following command to deploy the application,
 
 ```
-./mvnw clean install
+./mvnw clean fabric8:deploy
 ```
 
-the `install` goal will automcatically do `fabric8:deploy` allowing the applications to be deployed in kubernetes
+When you want to do https://martinfowler.com/bliki/CanaryRelease.html[Canary Release] do execute the following,
+
+
+```
+./mvnw -Pcanary clean fabric8:deploy
+```
+
+In either modes of the deployment, if the user has session associated can still continue to perform his actions on the site.
+
 
 NOTE: you need to wait for sometime during first deploy as images need to be pulled for the first time.
 
