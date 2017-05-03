@@ -1,6 +1,8 @@
 ---
 apiVersion: "extensions/v1beta1"
 kind: "Deployment"
+metadata:
+  name: "${project.artifactId}-canary"
 spec:
   replicas: ${replicas}
   template:

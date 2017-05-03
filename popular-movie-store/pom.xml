@@ -20,7 +20,14 @@
     <lombok.version>1.16.16</lombok.version>
     <jgroups.stack.file>default-jgroups-kubernetes.xml</jgroups.stack.file>
     <maven.test.skip>true</maven.test.skip>
-    <replicas>1</replicas>
+    <fabric8-maven-plugin.version>3.3.5</fabric8-maven-plugin.version>
+
+    <!-- application configuration -->
+    <fabric8-maven-plugin.from.image>fabric8/s2i-java:2.0</fabric8-maven-plugin.from.image>
+    <fabric8-maven-plugin.image.name>%a</fabric8-maven-plugin.image.name>
+    <fabric8-maven-plugin.resourceDir>${basedir}/src/main/fabric8</fabric8-maven-plugin.resourceDir>
+    <replicas>2</replicas>
+
   </properties>
 
   <dependencyManagement>
@@ -40,12 +47,13 @@
         <type>pom</type>
         <scope>import</scope>
       </dependency>
-
     </dependencies>
   </dependencyManagement>
 
   <name>JDG Demos:: Popular Movie Store</name>
-  <description>A simple movie store example which uses JDG and Spring Session</description>
+  <description>A simple movie store example which uses JDG and Spring Session to demonstrate , HTTP Session management
+    during normal and canary deployment
+  </description>
 
   <dependencies>
 
@@ -137,72 +145,106 @@
 
   </dependencies>
 
-  <build>
 
-    <resources>
-      <resource>
-        <directory>src/main/resources</directory>
-        <filtering>true</filtering>
-      </resource>
-      <resource>
-        <directory>src/main/fabric8</directory>
-        <filtering>true</filtering>
-      </resource>
-    </resources>
+  <profiles>
+    <!-- Profile to manage Canary releases -->
+    <profile>
+      <id>canary</id>
+      <properties>
+        <replicas>1</replicas>
+        <fabric8-maven-plugin.resourceDir>${basedir}/src/main/fabric8-canary</fabric8-maven-plugin.resourceDir>
+        <fabric8-maven-plugin.image.name>%a:%v.Canary</fabric8-maven-plugin.image.name>
+      </properties>
+    </profile>
+  </profiles>
+
+  <build>
+    <pluginManagement>
+      <plugins>
+        <plugin>
+          <groupId>io.fabric8</groupId>
+          <artifactId>fabric8-maven-plugin</artifactId>
+          <version>${fabric8-maven-plugin.version}</version>
+        </plugin>
+        <plugin>
+          <groupId>org.springframework.boot</groupId>
+          <artifactId>spring-boot-maven-plugin</artifactId>
+          <version>${spring-boot.version}</version>
+          <executions>
+            <execution>
+              <goals>
+                <goal>repackage</goal>
+              </goals>
+            </execution>
+          </executions>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-enforcer-plugin</artifactId>
+          <version>1.4.1</version>
+          <executions>
+            <execution>
+              <id>enforce-mandatory-property</id>
+              <goals>
+                <goal>enforce</goal>
+              </goals>
+              <configuration>
+                <rules>
+                  <requireProperty>
+                    <property>apiKey</property>
+                    <message>You must pass base64 hash of the apiKey like -DapiKey="base64 encoded api key"
+                      Please visit https://www.themoviedb.org/documentation/api for more info.
+                    </message>
+                    <regex>^[A-Za-z0-9+\/=]*$</regex>
+                    <regexMessage>Please pass a valid base64 encoded value for your apiKey</regexMessage>
+                  </requireProperty>
+                </rules>
+                <fail>true</fail>
+              </configuration>
+            </execution>
+          </executions>
+        </plugin>
+      </plugins>
+    </pluginManagement>
     <plugins>
+
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-enforcer-plugin</artifactId>
-        <version>1.4.1</version>
-        <executions>
-          <execution>
-            <id>enforce-mandatory-property</id>
-            <goals>
-              <goal>enforce</goal>
-            </goals>
-            <configuration>
-              <rules>
-                <requireProperty>
-                  <property>apiKey</property>
-                  <message>You must pass base64 hash of the apiKey like -DapiKey="base64 encoded api key"
-                    Please visit https://www.themoviedb.org/documentation/api for more info.
-                  </message>
-                  <regex>^[A-Za-z0-9+\/=]*$</regex>
-                  <regexMessage>Please pass a valid base64 encoded value for your apiKey</regexMessage>
-                </requireProperty>
-              </rules>
-              <fail>true</fail>
-            </configuration>
-          </execution>
-        </executions>
       </plugin>
+
       <plugin>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-maven-plugin</artifactId>
         <version>${spring-boot.version}</version>
-        <executions>
-          <execution>
-            <goals>
-              <goal>repackage</goal>
-            </goals>
-          </execution>
-        </executions>
       </plugin>
+
       <plugin>
         <groupId>io.fabric8</groupId>
         <artifactId>fabric8-maven-plugin</artifactId>
-        <version>3.3.5</version>
+        <version>${fabric8-maven-plugin.version}</version>
         <executions>
           <execution>
-            <phase>install</phase>
             <goals>
-              <goal>resource</goal>
               <goal>build</goal>
-              <goal>helm</goal>
-              <goal>deploy</goal>
+              <goal>resource</goal>
             </goals>
           </execution>
         </executions>
+        <configuration>
+          <resourceDir>${fabric8-maven-plugin.resourceDir}</resourceDir>
+          <images>
+            <image>
+              <name>${fabric8-maven-plugin.image.name}</name>
+              <build>
+                <from>${fabric8-maven-plugin.from.image}</from>
+                <assembly>
+                  <descriptorRef>artifact</descriptorRef>
+                </assembly>
+              </build>
+            </image>
+          </images>
+        </configuration>
       </plugin>
     </plugins>
   </build>

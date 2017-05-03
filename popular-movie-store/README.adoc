@@ -1,9 +1,30 @@
 = Popular Movie Store
 
-A demo application that will be used to demonstrate the application state maintainence using Infinispan and Spring Session.
-The application will be tested for rolling upgrades in kuberenetes.
+Application that will demonstrate,
+
+* Stateful application redeployments on Kubernetes/OpenShift
+* Using Inifinispan with Spring Boot for HTTP session caching and management
+
 
 WARNING: Document is still under development, might under some changs in instruction
+
+== Setup Local Kubernetes Cluster
+
+The kubernetes cluster can be set locally using
+
+* https://github.com/kubernetes/minikube[minikube]
+
+(OR)
+
+* https://github.com/minishift/minishift[minishift]
+
+NOTE: When running in OpenShift, to make the project view other pods it need to be added to view role
+like
+
+* `oc policy add-role-to-user view system:serviceaccount:$(oc project -q):default -n $(oc project -q)`
+
+* `oc policy add-role-to-user view system:serviceaccount:$(oc project -q):popular-movie-store -n $(oc project -q)`
+
 
 == Building
 
@@ -67,23 +88,6 @@ using http://192.168.64.14:31923
 The core idea of the demo is to see if my sessions stand with rolling upgrade of the applications, to know your current
 sessions you can access the url http://<kube-ip>:<nodePort/sessions, which will return the JSON of the currently active
 sessions
-
-== Setup Local Kubernetes Cluster
-
-The kubernetes cluster can be set locally using
-
-* https://github.com/kubernetes/minikube[minikube]
-
-(OR)
-
-* https://github.com/minishift/minishift[minishift]
-
-NOTE: When running in OpenShift, to make the project view other pods it need to be added to view role
-like
-
-* `oc policy add-role-to-user view system:serviceaccount:$(oc project -q):default -n $(oc project -q)`
-
-* `oc policy add-role-to-user view system:serviceaccount:$(oc project -q):popular-movie-store -n $(oc project -q)`
 
 == Utilities and Tools
 

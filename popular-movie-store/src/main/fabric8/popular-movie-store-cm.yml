@@ -4,4 +4,4 @@ data:
   application.yaml: |-
     moviestore:
       apiEndpointUrl: "https://api.themoviedb.org/3"
-      apiKey: $API_KEY
+      apiKey: "${API_KEY}"
