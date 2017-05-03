@@ -1,3 +1,19 @@
+/*
+ *  Copyright (c) 2017 Kamesh Sampath<kamesh.sampath@hotmail.com>
+ *
+ *  Licensed under the Apache License, Version 2.0 (the "License");
+ *  you may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package org.workspace7.moviestore.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -33,6 +49,12 @@ public class SessionsController {
     public @ResponseBody
     String sessions(HttpServletRequest request) {
 
+        final String hostname = System.getenv().getOrDefault("HOSTNAME", "unknown");
+
+        ObjectMapper sessions = new ObjectMapper();
+
+        ObjectNode rootNode = sessions.createObjectNode().put("hostName", hostname);
+
         String jsonResponse = "{\"message\":\"NO SESSIONS AVAILABLE\"}";
 
         try {
@@ -42,9 +64,7 @@ public class SessionsController {
 
             if (sessionCache != null && !sessionCache.isEmpty()) {
 
-                ObjectMapper sessions = new ObjectMapper();
-
-                ArrayNode sessionsArray = sessions.createArrayNode();
+                ArrayNode sessionsArray = rootNode.arrayNode();
 
                 Map<String, Object> sessionsCacheMap = sessionCache.entrySet()
                     .stream()
@@ -88,9 +108,8 @@ public class SessionsController {
                         sessionsArray.add(movieCartNode);
                     }
                 });
-                jsonResponse = sessions.writeValueAsString(sessionsArray);
             }
-
+            jsonResponse = sessions.writeValueAsString(rootNode);
         } catch (Exception e) {
             log.error("Error building JSON response for sesisons", e);
         }

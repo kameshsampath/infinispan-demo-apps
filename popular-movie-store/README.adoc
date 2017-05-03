@@ -1,12 +1,17 @@
+:toc: macro
+
 = Popular Movie Store
 
-Application that will demonstrate,
+toc::[]
 
-* Stateful application redeployments on Kubernetes/OpenShift
-* Using Inifinispan with Spring Boot for HTTP session caching and management
+== Overview
 
+This https://projects.spring.io/spring-boot/[Spring Boot] based application will demonstrate the the following,
 
-WARNING: Document is still under development, might under some changs in instruction
+* Stateful application redeployments on https://kubernetes.io/[Kubernetes]/https://www.openshift.com/[OpenShift]jbo
+* Using http://infinispan.org/[Inifinispan] with https://projects.spring.io/spring-boot/[Spring Boot] for HTTP session caching
+and management
+* Application state surviving across https://martinfowler.com/bliki/CanaryRelease.html[canary releases]
 
 == Setup Local Kubernetes Cluster
 
@@ -18,60 +23,63 @@ The kubernetes cluster can be set locally using
 
 * https://github.com/minishift/minishift[minishift]
 
-NOTE: When running in OpenShift, to make the project view other pods it need to be added to view role
-like
+[IMPORTANT]
+====
 
-* `oc policy add-role-to-user view system:serviceaccount:$(oc project -q):default -n $(oc project -q)`
+When running in OpenShift to allow service account query the Kube API we need to add permissions
+to the service account on the project.
 
-* `oc policy add-role-to-user view system:serviceaccount:$(oc project -q):popular-movie-store -n $(oc project -q)`
+This application uses a service account called *popular-movie-store* to run the pod, the service account
+*popular-movie-store* should be given __view__ permissions to use Kube API.
 
+[source, sh]
+----
+oc policy add-role-to-user view system:serviceaccount:$(oc project -q):default -n $(oc project -q)  # <1>
 
-== Building
+oc policy add-role-to-user view system:serviceaccount:$(oc project -q):popular-movie-store -n $(oc project -q) # <2>
+----
+
+<1> Adds view role to *default* service account
+<2> Adds view role to *popular-movie-store* service account
+
+====
+
+== API Key
 
 You need the themoviedb API key for running the application, you can get one from
-https://www.themoviedb.org/documentation/api[here].
+https://www.themoviedb.org/documentation/api[themoviedb].
 
-Once you have the API key from themoviedb, generate a base64 encoded value of it,
+Once you have the API key from https://www.themoviedb.org/documentation/api[themoviedb], generate a base64 encoded value of it,
 
-```
+[source, sh]
+----
 echo -n '<your-api-key>' | openssl base64
-```
-
-Once you have the base64 encoded API Key, run the following command to build the application,
-
-```
-./mvnw clean install -DapiKey=<your-base64-apikey>
-```
+----
 
 == Deploying
 
-
 Assuming you having a running Kubernetes cluster, execute the following command to deploy the application,
 
-```
-./mvnw clean fabric8:deploy
-```
+[source, sh]
+----
+./mvnw  -DapiKey=<api-key> clean fabric8:deploy #<1>
 
-When you want to do https://martinfowler.com/bliki/CanaryRelease.html[Canary Release] do execute the following,
+./mvnw -Pcanary clean -DapiKey=<api-key> clean fabric8:deploy #<2>
+----
 
+<1> The *fabric8:deploy* will trigger deployment of manifests in Kubernetes cluster
+<2> The application is configured with maven profile called *canary*, this will aid in doing
+the https://martinfowler.com/bliki/CanaryRelease.html[Canary Releases]
 
-```
-./mvnw -Pcanary clean fabric8:deploy
-```
+[TIP]
+====
 
-In either modes of the deployment, if the user has session associated can still continue to perform his actions on the site.
+Everytime you do *fabric8:deploy* all resources are recreated this could be an issue with services as *nodePort* will
+refreshed on every deployment, to avoid that just add `-Dfabric8.deploy.ignoreServices` when doing re-deployments.
 
+====
 
-NOTE: you need to wait for sometime during first deploy as images need to be pulled for the first time.
-
-== Checking the state
-
-```
-./mvnw clean install -DapiKey=<api-key> -Dfabric8.deploy.ignoreServices
-```
-
-NOTE: `-Dfabric8.deploy.ignoreServices` avoids service redeployment when business logic changes,
-helps in using the same nodePort
+NOTE: The build will take some time for the very first deployment, as bunch of images needs to be pulled.
 
 == Accessing the Application
 
@@ -79,24 +87,51 @@ Once the application is deployed in Kubernetes you can access the application us
 services of this application are deployed using `nodePort` as service type.
 
 * To know the kube-ip run `minikube ip` or `minishift ip`
-* To know the `nodePort` of the application  run
 
-    `kubectl get svc popular-movie-store -o yaml | shyaml get-value spec.ports.0.nodePort`
+=== Knowing nodePort
 
+To know the `nodePort` of the application run the following comamnds(s)
+[source,sh]
+----
+kubectl get svc popular-movie-store -o yaml | shyaml get-value spec.ports.0.nodePort #<1>
+----
 (OR)
-
-    `kubectl get svc popular-movie-store -o json | jq '.spec.ports[0].nodePort'`
+[source,sh]
+----
+`kubectl get svc popular-movie-store -o json | jq '.spec.ports[0].nodePort' #<2>
+----
+<1> <<tools,shyaml>> is tool to parse yaml from commandline
+<2> <<tools,jq>> is a tool to parse json from commandline
 
 e.g.
 
 Lets say your kube ip is `192.168.64.14` and the application nodePort is `31923`, then you can access the application
 using http://192.168.64.14:31923
 
+TIP: If you are using *OpenShift* then you can check the application url form the OpenShift console
+
 ==== Sessions API
 
 The core idea of the demo is to see if my sessions stand with rolling upgrade of the applications, to know your current
 sessions you can access the url http://<kube-ip>:<nodePort/sessions, which will return the JSON of the currently active
 sessions
+
+== Undeploying
+
+To undeploy the application in:
+
+=== Normal release
+
+[code,sh]
+----
+./mvnw  -DapiKey=<api-key> fabric8:undeploy
+----
+
+=== Canary Release
+
+```
+./mvnw -Pcanary -DapiKey=<api-key> fabric8:undeploy
+```
 
 == Utilities and Tools
 
@@ -112,11 +147,29 @@ label `expose:true`
 * https://github.com/fabric8io/configmapcontroller[configmapcontroller] - a utility that does a rebounce of the pod when the configmap mentioned in the annotation of the
 deployment changes
 
+[[tools]]
 === Tools
-
+* https://fmp.fabric8.io[fabric8-maven-plugin]
 * http://hawt.io/[hawtio]
 * https://stedolan.github.io/jq/[jq]
 * https://github.com/0k/shyaml[shyaml]
+
+== License
+
+Copyright 2017 Kamesh Sampath
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+
 
 == Disclaimer
 
