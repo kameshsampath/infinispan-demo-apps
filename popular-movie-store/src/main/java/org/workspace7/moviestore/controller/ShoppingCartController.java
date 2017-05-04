@@ -42,8 +42,14 @@ import java.util.stream.Collectors;
 public class ShoppingCartController {
 
     public static final String SESSION_ATTR_MOVIE_CART = "MOVIE_CART";
+
+
+    final MovieDBHelper movieDBHelper;
+
     @Autowired
-    MovieDBHelper movieDBHelper;
+    public ShoppingCartController(MovieDBHelper movieDBHelper) {
+        this.movieDBHelper = movieDBHelper;
+    }
 
     /**
      * @param movieId

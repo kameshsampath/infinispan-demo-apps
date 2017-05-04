@@ -41,8 +41,13 @@ import java.util.stream.Collectors;
 @Slf4j
 public class SessionsController {
 
+
+    final CacheManager cacheManager;
+
     @Autowired
-    CacheManager cacheManager;
+    public SessionsController(CacheManager cacheManager) {
+        this.cacheManager = cacheManager;
+    }
 
     @CrossOrigin
     @RequestMapping(method = RequestMethod.GET, value = "/sessions", produces = "application/json")

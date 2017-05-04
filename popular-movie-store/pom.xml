@@ -28,6 +28,7 @@
     <fabric8-maven-plugin.resourceDir>${basedir}/src/main/fabric8</fabric8-maven-plugin.resourceDir>
     <replicas>2</replicas>
 
+    <infinispan-spring-boot-starter.version>1.0.0.CR1</infinispan-spring-boot-starter.version>
   </properties>
 
   <dependencyManagement>
@@ -96,17 +97,33 @@
 
     <dependency>
       <groupId>org.infinispan</groupId>
-      <artifactId>infinispan-embedded</artifactId>
+      <artifactId>infinispan-spring-boot-starter</artifactId>
+      <version>${infinispan-spring-boot-starter.version}</version>
+      <exclusions>
+        <exclusion>
+          <groupId>org.infinispan</groupId>
+          <artifactId>infinispan-commons</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.infinispan</groupId>
+          <artifactId>infinispan-client-hotrod</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+
+    <dependency>
+      <groupId>org.infinispan</groupId>
+      <artifactId>infinispan-core</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.infinispan</groupId>
+      <artifactId>infinispan-cloud</artifactId>
     </dependency>
 
     <dependency>
       <groupId>org.infinispan</groupId>
       <artifactId>infinispan-spring4-embedded</artifactId>
-    </dependency>
-
-    <dependency>
-      <groupId>org.jboss.spec.javax.transaction</groupId>
-      <artifactId>jboss-transaction-api_1.1_spec</artifactId>
     </dependency>
 
     <!-- Web -->
@@ -151,7 +168,7 @@
     <profile>
       <id>canary</id>
       <properties>
-        <replicas>1</replicas>
+        <replicas>0</replicas>
         <fabric8-maven-plugin.resourceDir>${basedir}/src/main/fabric8-canary</fabric8-maven-plugin.resourceDir>
         <fabric8-maven-plugin.image.name>%a:%v.Canary</fabric8-maven-plugin.image.name>
       </properties>
