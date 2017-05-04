@@ -92,6 +92,8 @@ public class ShoppingCartController {
     @GetMapping("/cart/show")
     public String showCart(Map<String, Object> model, HttpSession session) {
 
+        final String hostname = System.getenv().getOrDefault("HOSTNAME", "unknown");
+
         MovieCart movieCart = (MovieCart) session.getAttribute(SESSION_ATTR_MOVIE_CART);
 
         log.info("Showing Cart {}", movieCart);
@@ -114,6 +116,7 @@ public class ShoppingCartController {
             .collect(Collectors.toList());
         model.put("cartItems", cartMovies);
         model.put("cartCount", cartMovies.size());
+        model.put("hostname", hostname);
         return "cart";
     }
 
