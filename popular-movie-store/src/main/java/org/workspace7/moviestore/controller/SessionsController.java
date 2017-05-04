@@ -108,6 +108,7 @@ public class SessionsController {
                         sessionsArray.add(movieCartNode);
                     }
                 });
+                rootNode.set("sessions", sessionsArray);
             }
             jsonResponse = sessions.writeValueAsString(rootNode);
         } catch (Exception e) {
