@@ -1,7 +1,6 @@
 node('maven') {
-  stage('Build') {
+  stage('Checkout') {
     git url: "https://github.com/kameshsampath/infinispan-demo-apps.git"
-    sh "cd popular-movie-store"
   }
   
   def isCanary = input(
@@ -10,11 +9,12 @@ node('maven') {
   ])
 
   stage('Deploy') {
+     sh "cd popular-movie-store"
      if(isCanary){
         echo "Doing Canary Release"
         sh "mvn -Pcanary clean fabric8:deploy"
      }else{
-        echo "Doing Canary Release"
+        echo "Doing pre-canary Release"
         sh "mvn clean fabric8:deploy"
      }
   }
