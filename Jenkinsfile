@@ -12,10 +12,10 @@ node('maven') {
   stage('Deploy') {
      if(isCanary){
         echo "Doing Canary Release"
-        sh "./mvnw -Pcanary clean fabric8:deploy"
+        sh "mvn -Pcanary clean fabric8:deploy"
      }else{
         echo "Doing Canary Release"
-        sh "./mvnw clean fabric8:deploy"
+        sh "mvn clean fabric8:deploy"
      }
   }
 
