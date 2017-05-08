@@ -8,13 +8,14 @@ node('maven') {
     [$class: 'BooleanParameterDefinition', defaultValue: false, description: '', name: 'Is this a canary release ?']
   ])
 
-  stage('Deploy') {
-     dir('popular-movie-store')
-     if(isCanary){
-        echo "Doing Canary Release"
+  if(isCanary){
+      stage('Canary Deploy') {
+        dir('popular-movie-store')
         sh "mvn -Pcanary clean fabric8:deploy"
-     }else{
-        echo "Doing pre-canary Release"
+      }
+  }else{
+      stage('Deploy') {
+        dir('popular-movie-store')
         sh "mvn clean fabric8:deploy"
      }
   }
