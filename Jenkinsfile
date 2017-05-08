@@ -11,12 +11,12 @@ node('maven') {
   if(isCanary){
       stage('Canary Deploy') {
         dir('popular-movie-store')
-        sh "mvn -Pcanary clean fabric8:deploy"
+        sh "mvn -DapiKey=xxsysysysys -Pcanary clean fabric8:deploy"
       }
   }else{
       stage('Deploy') {
         dir('popular-movie-store')
-        sh "mvn clean fabric8:deploy"
+        sh "mvn -DapiKey=xxsysysysys clean fabric8:deploy"
      }
   }
 
