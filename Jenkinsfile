@@ -9,7 +9,7 @@ node('maven') {
   ])
 
   stage('Deploy') {
-     sh "cd popular-movie-store"
+     dir('popular-movie-store')
      if(isCanary){
         echo "Doing Canary Release"
         sh "mvn -Pcanary clean fabric8:deploy"
