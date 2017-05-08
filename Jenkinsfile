@@ -1,6 +1,7 @@
 node('maven') {
   stage('Checkout') {
     git url: "https://github.com/kameshsampath/infinispan-demo-apps.git"
+    dir('popular-movie-store')
   }
   
   def isCanary = input(
@@ -10,13 +11,11 @@ node('maven') {
 
   if(isCanary){
       stage('Canary Deploy') {
-        dir('popular-movie-store')
-        sh "mvn -DapiKey=xxsysysysys -Pcanary clean fabric8:deploy"
+        sh "./mvnw -DapiKey=xxsysysysys -Pcanary clean fabric8:deploy"
       }
   }else{
       stage('Deploy') {
-        dir('popular-movie-store')
-        sh "mvn -DapiKey=xxsysysysys clean fabric8:deploy"
+        sh "./mvnw -DapiKey=xxsysysysys clean fabric8:deploy"
      }
   }
 
