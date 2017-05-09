@@ -11,7 +11,7 @@ items:
   spec:
     source:
       git:
-        uri: https://github.com/kameshsampath/inifinispan-demo-apps/popular-movie-store.git
+        uri: "https://github.com/kameshsampath/infinispan-demo-apps.git"
       type: Git
       contextDir: "popular-movie-store"
     strategy:
