@@ -11,13 +11,16 @@ items:
   spec:
     source:
       git:
-        ref: pipeline
         uri: https://github.com/kameshsampath/inifinispan-demo-apps/popular-movie-store.git
       type: Git
+      contextDir: "popular-movie-store"
     strategy:
       type: JenkinsPipeline
       jenkinsPipelineStrategy:
         jenkinsfilePath: Jenkinsfile
+        env:
+          - name: "MAVEN_MIRROR_URL"
+            value: "http://192.168.64.1:8081/repository/maven-public/"
     triggers:
     - generic:
         secret: infini5p@n
