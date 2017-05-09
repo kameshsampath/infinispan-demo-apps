@@ -6,18 +6,18 @@ id: 'canaryDeployment', message: 'Is it a canary release ?', parameters: [
 ])
 
 node('maven') {
-  stage 'Checkout' {
+  stage('Checkout') {
     git url: "https://github.com/kameshsampath/infinispan-demo-apps.git"
   }
   
   if(isCanary){
-      stage 'Canary Release' {
+      stage('Canary Release') {
        dir('popular-movie-store') {
          sh "./mvnw -DapiKey=xxsysysysys -Pcanary clean fabric8:deploy"
        }
       }
   }else{
-      stage 'Release'  {
+      stage('Release') {
        dir('popular-movie-store') {
           sh "./mvnw -DapiKey=xxsysysysys clean fabric8:deploy"
        }
