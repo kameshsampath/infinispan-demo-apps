@@ -1,7 +1,7 @@
 node('maven') {
   stage('Checkout') {
     git url: "https://github.com/kameshsampath/infinispan-demo-apps.git"
-    dir('popular-movie-store')
+    dir 'popular-movie-store'
   }
   
   def isCanary = input(
