@@ -30,8 +30,6 @@
 
     <infinispan-spring-boot-starter.version>1.0.0.CR1</infinispan-spring-boot-starter.version>
 
-    <!-- OpenShift project to use -->
-    <openshift.project>myproject</openshift.project>
   </properties>
 
   <dependencyManagement>
