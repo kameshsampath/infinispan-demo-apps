@@ -20,7 +20,7 @@
     <lombok.version>1.16.16</lombok.version>
     <jgroups.stack.file>default-jgroups-kubernetes.xml</jgroups.stack.file>
     <maven.test.skip>true</maven.test.skip>
-    <fabric8-maven-plugin.version>3.3.5</fabric8-maven-plugin.version>
+    <fabric8-maven-plugin.version>3.3-SNAPSHOT</fabric8-maven-plugin.version>
 
     <!-- application configuration -->
     <fabric8-maven-plugin.from.image>fabric8/s2i-java:2.0</fabric8-maven-plugin.from.image>
@@ -29,6 +29,7 @@
     <replicas>2</replicas>
 
     <infinispan-spring-boot-starter.version>1.0.0.CR1</infinispan-spring-boot-starter.version>
+
   </properties>
 
   <dependencyManagement>
