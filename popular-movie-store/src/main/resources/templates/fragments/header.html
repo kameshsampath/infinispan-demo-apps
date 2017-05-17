@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+<html xmlns:th="http://www.thymeleaf.org" th:fragment="header">
 <head>
   <meta charset="utf-8"/>
   <meta http-equiv="X-UA-Compatible" content="IE=Edge"/>
@@ -90,27 +90,5 @@
     </ul>
   </div>
 </nav>
-<div class="container-fluid">
-  <section layout:fragment="content">
-    <p>Page content goes here</p>
-  </section>
-</div>
-<hr/>
-<footer>
-  <div class="row">
-    <div class="col-sm-4">
-      &nbsp;
-    </div>
-    <div class="col-sm-4">
-      <p>
-        &copy; 2017
-        <a id="redhat-logo" href="http://developers.redhat.com" target="_blank" alt="Red Hat Developers">Red Hat Developers</a>
-      </p>
-    </div>
-    <div class="col-sm-4 pull-right">
-      &nbsp;
-    </div>
-  </div>
-</footer>
 </body>
 </html>

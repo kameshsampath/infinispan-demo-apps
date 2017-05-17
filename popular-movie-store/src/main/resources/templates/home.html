@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-      layout:decorator="layout/default_patternfly">
+<html xmlns:th="http://www.thymeleaf.org">
+<div th:replace="~{fragments/header :: header}"></div>
 <body>
-<div class="container-fluid container-cards-pf" layout:fragment="content">
-  <div class="row row-cards-pf">
+<div class="container-fluid container-cards-pf">
+  <div class="row row-cards-pf clearfix" id="content">
     <div class="col-xs-12 col-sm-6 col-md-4 col-lg-3" th:each="movieCartItem : ${movies}">
       <div class="card-pf card-pf-view">
         <div class="card-pf-body">
@@ -13,7 +13,8 @@
                 <span class="fa"><img th:src="${movieCartItem.movie.posterPath}"/></span>
               </div>
               <div class="col-xs-12 col-sm-6">
-                <span class="fa card-pf-title text-center"><h3 th:text="${movieCartItem.movie.title}">Title</h3></span>
+                  <span class="fa card-pf-title text-center"><h3
+                    th:text="${movieCartItem.movie.title}">Title</h3></span>
               </div>
             </div>
           </div>
@@ -46,6 +47,7 @@
       </div>
     </div>
   </div>
+  <div th:insert="~{fragments/footer :: footer}">&copy; 2017 Red Hat</div>
 </div>
 </body>
 </html>

@@ -4,3 +4,8 @@ moviestore:
 infinispan:
   embedded:
     config-xml: infinispan-moviestore.xml
+spring:
+  thymeleaf:
+    mode: HTML
+    cache: false
+
