@@ -30,9 +30,12 @@ import org.workspace7.moviestore.utils.MovieDBHelper;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import java.text.DecimalFormat;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
 /**
@@ -114,13 +117,14 @@ public class ShoppingCartController {
         if (movieCart != null) {
 
             modelAndView.addObject("movieCart", movieCart);
-
+            AtomicReference<Double> cartTotal = new AtomicReference<>(0.0);
             Map<String, Integer> movieItems = movieCart.getMovieItems();
             List<MovieCartItem> cartMovies = movieCart.getMovieItems().keySet().stream()
                 .map(movieId -> {
                     Movie movie = movieDBHelper.query(movieId);
                     int quantity = movieItems.get(movieId);
                     double total = quantity * movie.getPrice();
+                    cartTotal.updateAndGet(aDouble -> aDouble + total);
                     log.info("Movie:{} total for {} items is {}", movie, quantity, total);
                     return MovieCartItem.builder()
                         .movie(movie)
@@ -131,7 +135,10 @@ public class ShoppingCartController {
                 .collect(Collectors.toList());
             modelAndView.addObject("cartItems", cartMovies);
             modelAndView.addObject("cartCount", cartMovies.size());
+            modelAndView.addObject("cartTotal",
+                "" + DecimalFormat.getCurrencyInstance(Locale.US).format(cartTotal.get()));
             modelAndView.setViewName("cart");
+
         } else {
             modelAndView.setViewName("redirect:/");
         }
