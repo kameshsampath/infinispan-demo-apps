@@ -60,6 +60,7 @@ public class HomeController {
 
     @GetMapping("/")
     public ModelAndView home(ModelAndView modelAndView, HttpServletRequest request) {
+        
         final String hostname = System.getenv().getOrDefault("HOSTNAME", "unknown");
         log.info("Request served by HOST {} ", hostname);
 

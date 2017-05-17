@@ -19,10 +19,13 @@ package org.workspace7.moviestore.controller;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.workspace7.moviestore.data.Movie;
 import org.workspace7.moviestore.data.MovieCart;
 import org.workspace7.moviestore.data.MovieCartItem;
@@ -149,9 +152,14 @@ public class ShoppingCartController {
      *
      */
     @PostMapping("/cart/pay")
-    @ResponseStatus(HttpStatus.CREATED)
-    public void checkout(HttpSession session) {
+    public ModelAndView checkout(ModelAndView modelAndView, HttpSession session, RedirectAttributes redirectAttributes) {
         MovieCart movieCart = (MovieCart) session.getAttribute(SESSION_ATTR_MOVIE_CART);
-        log.info("Your request {} will be processed, thank your for shopping", movieCart);
+        if (movieCart != null) {
+            log.info("Your request {} will be processed, thank your for shopping", movieCart);
+            session.removeAttribute(SESSION_ATTR_MOVIE_CART);
+        }
+        modelAndView.setViewName("redirect:/");
+        redirectAttributes.addFlashAttribute("orderStatus", 1);
+        return modelAndView;
     }
 }
