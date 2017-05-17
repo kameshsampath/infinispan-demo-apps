@@ -29,6 +29,7 @@ import java.io.Serializable;
 public class Movie implements Serializable {
     private String id;
     private String posterPath;
+    private String logoPath;
     private String overview;
     private String title;
     private float popularity;

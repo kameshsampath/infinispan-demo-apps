@@ -9,6 +9,7 @@
   <!-- Note: No other CSS files are needed regardless of what other JS packages located in patternfly/components that you decide to pull in -->
   <link rel="stylesheet" href="/css/patternfly.min.css"/>
   <link rel="stylesheet" href="/css/patternfly-additions.min.css"/>
+  <link rel="stylesheet" href="/css/moviestore.css"/>
 
   <!-- Datatables, jQuery Grid Component -->
   <!-- Note: jquery.dataTables.js must occur in the html source before patternfly*.js.-->
@@ -55,9 +56,13 @@
   <!-- MatchHeight - Used to make sure dashboard cards are the same height -->
   <script src="/js/jquery.matchHeight-min.js"></script>
 
+  <!-- Application Java Scripts -->
+
+  <script src="/js/moviestore.main.js"></script>
+
 </head>
-<body>
-<nav class="navbar navbar-default navbar-pf" role="navigation">
+<body class="cards-pf">
+<nav class="navbar navbar-pf-vertical ">
   <div class="navbar-header">
     <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse-1">
       <span class="sr-only">Toggle navigation</span>
@@ -69,23 +74,17 @@
       <img src="/img/logo.png" alt="Popular Movie Store"/><span>Popular Movie Store</span>
     </a>
   </div>
-  <div class="collapse navbar-collapse navbar-collapse-1">
-    <ul class="nav navbar-nav navbar-utility">
+  <nav class="collapse navbar-collapse navbar-collapse-1">
+    <ul class="nav navbar-nav navbar-right navbar-iconic">
       <li>
-        <a href="#">
-          <a href="#">Session<span class="badge">0</span></a>
-        </a>
-      </li>
-      <li>
-        <a href="#">
-          <a href="#">Your Cart<span class="badge" th:text="${cartCount==null?'0':cartCount}">0</span></a>
+        <a href="/cart/show" class="nav-item-iconic">
+          <span title="Notifications" class="fa icon-cart"></span>
+          <span id="cart-items-indicator" class="badge"
+                th:text="${cartCount==null?'0':cartCount}">0</span>
         </a>
       </li>
     </ul>
-    <ul class="nav navbar-nav navbar-primary">
-      <!--  Nothing for now -->
-    </ul>
-  </div>
+  </nav>
 </nav>
 <div class="container-fluid">
   <section layout:fragment="content">

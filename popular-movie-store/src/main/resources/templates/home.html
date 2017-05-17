@@ -19,6 +19,8 @@
           </div>
           <div class="card-pf-items text-center">
             <div class="card-pf-item">
+              <span class="icon-price-tags"></span>
+              <span class="card-pf-item-text">$</span>
               <span
                 class="card-pf-item-text"
                 th:text="${#numbers.formatDecimal(movieCartItem.movie.price, 0, 'DEFAULT', 2, 'DEFAULT')}">$0.00</span>
