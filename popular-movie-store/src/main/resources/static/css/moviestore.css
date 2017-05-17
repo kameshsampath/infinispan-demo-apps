@@ -1,7 +1,7 @@
 @font-face {
     font-family: 'icomoon';
-    src:  url('/fonts/moviestore.eot?gtmrv9');
-    src:  url('/fonts/moviestore.eot?gtmrv9#iefix') format('embedded-opentype'),
+    src: url('/fonts/moviestore.eot?gtmrv9');
+    src: url('/fonts/moviestore.eot?gtmrv9#iefix') format('embedded-opentype'),
     url('/fonts/moviestore.ttf?gtmrv9') format('truetype'),
     url('/fonts/moviestore.woff?gtmrv9') format('woff'),
     url('/fonts/moviestore.svg?gtmrv9#icomoon') format('svg');
@@ -27,12 +27,27 @@
 .icon-price-tags:before {
     content: "\e936";
 }
+
 .icon-cart:before {
     content: "\e93a";
 }
+
 .icon-coin-dollar:before {
     content: "\e93b";
 }
+
 .icon-credit-card:before {
     content: "\e93f";
+}
+
+.navbar-pf .nav .nav-item-iconic .badge {
+    background-color: #c00;
+    border-radius: 20px;
+    color: #fff;
+    cursor: pointer;
+    font-size: 9px;
+    font-weight: 700;
+    margin: 0 0 -11px -12px;
+    min-width: 0;
+    padding: 2px 4px;
 }

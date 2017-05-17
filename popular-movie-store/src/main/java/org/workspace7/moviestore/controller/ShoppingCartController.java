@@ -22,11 +22,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.ModelAndView;
 import org.workspace7.moviestore.data.Movie;
 import org.workspace7.moviestore.data.MovieCart;
 import org.workspace7.moviestore.data.MovieCartItem;
 import org.workspace7.moviestore.utils.MovieDBHelper;
 
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.util.List;
 import java.util.Map;
@@ -92,38 +94,48 @@ public class ShoppingCartController {
     }
 
     /**
-     * @param model
+     * @param modelAndView
+     * @param session
+     * @param response
      * @return
      */
     @GetMapping("/cart/show")
-    public String showCart(Map<String, Object> model, HttpSession session) {
+    public ModelAndView showCart(ModelAndView modelAndView, HttpSession session, HttpServletResponse response) {
 
         final String hostname = System.getenv().getOrDefault("HOSTNAME", "unknown");
+
+        modelAndView.addObject("hostname", hostname);
 
         MovieCart movieCart = (MovieCart) session.getAttribute(SESSION_ATTR_MOVIE_CART);
 
         log.info("Showing Cart {}", movieCart);
 
-        model.put("movieCart", movieCart);
 
-        Map<String, Integer> movieItems = movieCart.getMovieItems();
-        List<MovieCartItem> cartMovies = movieCart.getMovieItems().keySet().stream()
-            .map(movieId -> {
-                Movie movie = movieDBHelper.query(movieId);
-                int quantity = movieItems.get(movieId);
-                double total = quantity * movie.getPrice();
-                log.info("Movie:{} total for {} items is {}", movie, quantity, total);
-                return MovieCartItem.builder()
-                    .movie(movie)
-                    .quantity(quantity)
-                    .total(total)
-                    .build();
-            })
-            .collect(Collectors.toList());
-        model.put("cartItems", cartMovies);
-        model.put("cartCount", cartMovies.size());
-        model.put("hostname", hostname);
-        return "cart";
+        if (movieCart != null) {
+
+            modelAndView.addObject("movieCart", movieCart);
+
+            Map<String, Integer> movieItems = movieCart.getMovieItems();
+            List<MovieCartItem> cartMovies = movieCart.getMovieItems().keySet().stream()
+                .map(movieId -> {
+                    Movie movie = movieDBHelper.query(movieId);
+                    int quantity = movieItems.get(movieId);
+                    double total = quantity * movie.getPrice();
+                    log.info("Movie:{} total for {} items is {}", movie, quantity, total);
+                    return MovieCartItem.builder()
+                        .movie(movie)
+                        .quantity(quantity)
+                        .total(total)
+                        .build();
+                })
+                .collect(Collectors.toList());
+            modelAndView.addObject("cartItems", cartMovies);
+            modelAndView.addObject("cartCount", cartMovies.size());
+            modelAndView.setViewName("cart");
+        } else {
+            modelAndView.setViewName("redirect:/");
+        }
+        return modelAndView;
     }
 
     /**

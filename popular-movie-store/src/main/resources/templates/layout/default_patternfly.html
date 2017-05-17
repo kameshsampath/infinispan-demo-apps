@@ -62,7 +62,7 @@
 
 </head>
 <body class="cards-pf">
-<nav class="navbar navbar-pf-vertical ">
+<nav class="navbar navbar-default navbar-pf">
   <div class="navbar-header">
     <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse-1">
       <span class="sr-only">Toggle navigation</span>
@@ -74,8 +74,8 @@
       <img src="/img/logo.png" alt="Popular Movie Store"/><span>Popular Movie Store</span>
     </a>
   </div>
-  <nav class="collapse navbar-collapse navbar-collapse-1">
-    <ul class="nav navbar-nav navbar-right navbar-iconic">
+  <div class="collapse navbar-collapse navbar-collapse-1">
+    <ul class="nav navbar-nav navbar-utility navbar-right navbar-iconic">
       <li>
         <a href="/cart/show" class="nav-item-iconic">
           <span title="Notifications" class="fa icon-cart"></span>
@@ -84,7 +84,11 @@
         </a>
       </li>
     </ul>
-  </nav>
+    <ul class="nav navbar-nav navbar-primary">
+      <li><a href="/" class="active">Home</a></li>
+      <!-- More will come ... -->
+    </ul>
+  </div>
 </nav>
 <div class="container-fluid">
   <section layout:fragment="content">
