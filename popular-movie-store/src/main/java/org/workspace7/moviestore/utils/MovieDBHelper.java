@@ -99,7 +99,8 @@ public class MovieDBHelper {
                             .id(id)
                             .overview(movieNode.get("overview").asText())
                             .popularity(movieNode.get("popularity").floatValue())
-                            .posterPath("http://image.tmdb.org/t/p/w370_and_h556_bestv2" + movieNode.get("poster_path").asText())
+                            .posterPath("http://image.tmdb.org/t/p/w92" + movieNode.get("poster_path").asText())
+                            .logoPath("http://image.tmdb.org/t/p/w45" + movieNode.get("poster_path").asText())
                             .title(movieNode.get("title").asText())
                             .price(ThreadLocalRandom.current().nextDouble(1.0, 10.0))
                             .build();

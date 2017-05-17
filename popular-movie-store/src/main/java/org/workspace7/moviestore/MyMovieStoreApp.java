@@ -17,38 +17,16 @@
 package org.workspace7.moviestore;
 
 import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.autoconfigure.cache.InfinispanCacheConfiguration;
-import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration;
-import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
-import org.springframework.boot.autoconfigure.thymeleaf.ThymeleafAutoConfiguration;
-import org.springframework.boot.autoconfigure.validation.ValidationAutoConfiguration;
-import org.springframework.boot.autoconfigure.web.*;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.web.support.SpringBootServletInitializer;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Import;
 
 /**
  * @author kameshs
  */
-@SpringBootApplication
-@Configuration
-@Import({
-    DispatcherServletAutoConfiguration.class,
-    EmbeddedServletContainerAutoConfiguration.class,
-    ErrorMvcAutoConfiguration.class,
-    HttpEncodingAutoConfiguration.class,
-    HttpMessageConvertersAutoConfiguration.class,
-    InfinispanCacheConfiguration.class,
-    JacksonAutoConfiguration.class,
-    PropertyPlaceholderAutoConfiguration.class,
-    ServerPropertiesAutoConfiguration.class,
-    ThymeleafAutoConfiguration.class,
-    ValidationAutoConfiguration.class,
-    WebClientAutoConfiguration.class,
-    WebMvcAutoConfiguration.class
-})
+@SpringBootApplication(exclude = {org.springframework.boot.autoconfigure.thymeleaf.ThymeleafAutoConfiguration.class})
+@EnableAutoConfiguration
 public class MyMovieStoreApp extends SpringBootServletInitializer {
 
     public static void main(String... args) {

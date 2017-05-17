@@ -19,18 +19,26 @@ package org.workspace7.moviestore.controller;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.workspace7.moviestore.data.Movie;
 import org.workspace7.moviestore.data.MovieCart;
 import org.workspace7.moviestore.data.MovieCartItem;
 import org.workspace7.moviestore.utils.MovieDBHelper;
 
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import java.text.DecimalFormat;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
 /**
@@ -92,47 +100,66 @@ public class ShoppingCartController {
     }
 
     /**
-     * @param model
+     * @param modelAndView
+     * @param session
+     * @param response
      * @return
      */
     @GetMapping("/cart/show")
-    public String showCart(Map<String, Object> model, HttpSession session) {
+    public ModelAndView showCart(ModelAndView modelAndView, HttpSession session, HttpServletResponse response) {
 
         final String hostname = System.getenv().getOrDefault("HOSTNAME", "unknown");
+
+        modelAndView.addObject("hostname", hostname);
 
         MovieCart movieCart = (MovieCart) session.getAttribute(SESSION_ATTR_MOVIE_CART);
 
         log.info("Showing Cart {}", movieCart);
 
-        model.put("movieCart", movieCart);
 
-        Map<String, Integer> movieItems = movieCart.getMovieItems();
-        List<MovieCartItem> cartMovies = movieCart.getMovieItems().keySet().stream()
-            .map(movieId -> {
-                Movie movie = movieDBHelper.query(movieId);
-                int quantity = movieItems.get(movieId);
-                double total = quantity * movie.getPrice();
-                log.info("Movie:{} total for {} items is {}", movie, quantity, total);
-                return MovieCartItem.builder()
-                    .movie(movie)
-                    .quantity(quantity)
-                    .total(total)
-                    .build();
-            })
-            .collect(Collectors.toList());
-        model.put("cartItems", cartMovies);
-        model.put("cartCount", cartMovies.size());
-        model.put("hostname", hostname);
-        return "cart";
+        if (movieCart != null) {
+
+            modelAndView.addObject("movieCart", movieCart);
+            AtomicReference<Double> cartTotal = new AtomicReference<>(0.0);
+            Map<String, Integer> movieItems = movieCart.getMovieItems();
+            List<MovieCartItem> cartMovies = movieCart.getMovieItems().keySet().stream()
+                .map(movieId -> {
+                    Movie movie = movieDBHelper.query(movieId);
+                    int quantity = movieItems.get(movieId);
+                    double total = quantity * movie.getPrice();
+                    cartTotal.updateAndGet(aDouble -> aDouble + total);
+                    log.info("Movie:{} total for {} items is {}", movie, quantity, total);
+                    return MovieCartItem.builder()
+                        .movie(movie)
+                        .quantity(quantity)
+                        .total(total)
+                        .build();
+                })
+                .collect(Collectors.toList());
+            modelAndView.addObject("cartItems", cartMovies);
+            modelAndView.addObject("cartCount", cartMovies.size());
+            modelAndView.addObject("cartTotal",
+                "" + DecimalFormat.getCurrencyInstance(Locale.US).format(cartTotal.get()));
+            modelAndView.setViewName("cart");
+
+        } else {
+            modelAndView.setViewName("redirect:/");
+        }
+        return modelAndView;
     }
 
     /**
      *
      */
     @PostMapping("/cart/pay")
-    @ResponseStatus(HttpStatus.CREATED)
-    public void checkout(HttpSession session) {
+    public ModelAndView checkout(ModelAndView modelAndView, HttpSession session, RedirectAttributes redirectAttributes) {
         MovieCart movieCart = (MovieCart) session.getAttribute(SESSION_ATTR_MOVIE_CART);
-        log.info("Your request {} will be processed, thank your for shopping", movieCart);
+        if (movieCart != null) {
+            log.info("Your request {} will be processed, thank your for shopping", movieCart);
+            session.removeAttribute(SESSION_ATTR_MOVIE_CART);
+        }
+        modelAndView.setViewName("redirect:/");
+        redirectAttributes.addFlashAttribute("orderStatus", 1);
+        return modelAndView;
     }
 }
