@@ -3,3 +3,6 @@ data:
     moviestore:
       apiEndpointUrl: "https://api.themoviedb.org/3"
       apiKey: "${API_KEY}"
+    infinispan:
+      embedded:
+        config-xml: infinispan-moviestore.xml

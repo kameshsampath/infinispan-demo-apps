@@ -20,9 +20,9 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.infinispan.AdvancedCache;
+import org.infinispan.manager.EmbeddedCacheManager;
 import org.infinispan.stream.CacheCollectors;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.CacheManager;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
@@ -51,15 +51,15 @@ public class MovieDBHelper {
 
     final MovieStoreProps movieStoreProps;
 
-    final AdvancedCache<String, Movie> moviesCache;
+    final AdvancedCache<Object, Object> moviesCache;
 
     @Autowired
     public MovieDBHelper(RestTemplate restTemplate, MovieStoreProps movieStoreProps,
-                         CacheManager cacheManager) {
+                         EmbeddedCacheManager cacheManager) {
         this.restTemplate = restTemplate;
         this.movieStoreProps = movieStoreProps;
-        this.moviesCache = (AdvancedCache<String, Movie>) cacheManager
-            .getCache(POPULAR_MOVIES_CACHE).getNativeCache();
+        this.moviesCache = cacheManager
+            .getCache(POPULAR_MOVIES_CACHE).getAdvancedCache();
     }
 
     /**
@@ -121,7 +121,7 @@ public class MovieDBHelper {
     }
 
     public Movie query(String movieId) {
-        return moviesCache.get(movieId);
+        return (Movie) moviesCache.get(movieId);
     }
 
     /**
@@ -136,28 +136,12 @@ public class MovieDBHelper {
 
         List<Movie> movies = moviesCache.entrySet().stream()
             .map(longMovieEntry -> longMovieEntry.getValue())
+            .map(o -> Movie.class.cast(o))
             .collect(CacheCollectors.serializableCollector(() -> Collectors.toList()));
 
         log.info("Loaded {} movies from cache", movies.size());
 
         return movies;
     }
-
-//    /**
-//     * Computing the MD5 hash based on api public and private key
-//     *
-//     * @param timestamp - the timestamp to be added to the hash
-//     * @return - the MD5 digest of the timestamp + public key + private key
-//     * @throws NoSuchAlgorithmException - if the specified algorithm is not present
-//     */
-//    protected String hash(String timestamp) throws NoSuchAlgorithmException {
-//        String hashInput = timestamp + movieStoreProps.getApiKey()
-//            + movieStoreProps.getMarvelApiPublicKey();
-//        MessageDigest md5Digest = MessageDigest.getInstance("MD5");
-//        md5Digest.update(hashInput.toString().getBytes());
-//        byte[] md5bytes = md5Digest.digest();
-//        String md5Hash = DatatypeConverter.printHexBinary(md5bytes);
-//        return md5Hash;
-//    }
 }
 

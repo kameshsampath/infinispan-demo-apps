@@ -21,9 +21,9 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import lombok.extern.slf4j.Slf4j;
 import org.infinispan.AdvancedCache;
+import org.infinispan.manager.EmbeddedCacheManager;
 import org.infinispan.stream.CacheCollectors;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.CacheManager;
 import org.springframework.session.MapSession;
 import org.springframework.web.bind.annotation.*;
 import org.workspace7.moviestore.data.MovieCart;
@@ -33,7 +33,6 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
- *
  * @author kameshs
  */
 @RestController
@@ -41,10 +40,10 @@ import java.util.stream.Collectors;
 public class SessionsController {
 
 
-    final CacheManager cacheManager;
+    final EmbeddedCacheManager cacheManager;
 
     @Autowired
-    public SessionsController(CacheManager cacheManager) {
+    public SessionsController(EmbeddedCacheManager cacheManager) {
         this.cacheManager = cacheManager;
     }
 
@@ -63,14 +62,14 @@ public class SessionsController {
 
         try {
 
-            AdvancedCache<String, Object> sessionCache = (AdvancedCache<String, Object>)
-                cacheManager.getCache("moviestore-sessions-cache").getNativeCache();
+            AdvancedCache<Object, Object> sessionCache = cacheManager
+                .getCache("moviestore-sessions-cache").getAdvancedCache();
 
             if (sessionCache != null && !sessionCache.isEmpty()) {
 
                 ArrayNode sessionsArray = rootNode.arrayNode();
 
-                Map<String, Object> sessionsCacheMap = sessionCache.entrySet()
+                Map<Object, Object> sessionsCacheMap = sessionCache.entrySet()
                     .stream()
                     .collect(CacheCollectors.serializableCollector(() ->
                         Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue)));
