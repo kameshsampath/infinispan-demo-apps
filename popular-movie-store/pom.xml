@@ -111,7 +111,8 @@
 
     <!-- Caching via infinispan-->
 
-    <dependency>
+    <!-- Infinispan Spring Boot Auto Config is disabled to debug the REBALANCE issue, seem -->
+    <!-- dependency>
       <groupId>org.infinispan</groupId>
       <artifactId>infinispan-spring-boot-starter</artifactId>
       <version>${infinispan-spring-boot-starter.version}</version>
@@ -135,6 +136,11 @@
     <dependency>
       <groupId>org.infinispan</groupId>
       <artifactId>infinispan-cloud</artifactId>
+    </dependency -->
+
+    <dependency>
+      <groupId>org.infinispan</groupId>
+      <artifactId>infinispan-embedded</artifactId>
     </dependency>
 
     <dependency>

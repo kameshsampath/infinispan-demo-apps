@@ -60,7 +60,7 @@ public class HomeController {
 
     @GetMapping("/")
     public ModelAndView home(ModelAndView modelAndView, HttpServletRequest request) {
-        
+
         final String hostname = System.getenv().getOrDefault("HOSTNAME", "unknown");
         log.info("Request served by HOST {} ", hostname);
 
@@ -153,8 +153,6 @@ public class HomeController {
     @GetMapping("/healthz")
     public ResponseEntity healthz() {
 
-        log.trace("Health check seems to be good...");
-
         HealthStatus healthStatus = cacheManager.getNativeCacheManager()
             .getHealth().getClusterHealth().getHealthStatus();
 
@@ -163,7 +161,7 @@ public class HomeController {
             return new ResponseEntity(HttpStatus.OK);
         }
 
-        return new ResponseEntity(HttpStatus.NOT_FOUND);
+        return new ResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
 }
