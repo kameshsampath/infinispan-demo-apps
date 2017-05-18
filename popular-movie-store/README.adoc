@@ -1,3 +1,5 @@
+WARNING: This repository is deprecated, all active development of this application is done in https://github.com/redhat-developer-demos/popular-movie-store
+
 :toc: macro
 
 = Popular Movie Store
